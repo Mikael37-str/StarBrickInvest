@@ -26,7 +26,7 @@ export default function HomeScreen({ navigation }: any) {
 
   useEffect(() => {
     axios
-      .get("http://192.168.1.47:3000/api/articles")
+      .get("https://perfect-encouragement-production.up.railway.app/api/articles")
       .then((res) => setArticles(res.data.articles || []))
       .catch(() => setArticles([]))
   }, [])
@@ -94,7 +94,6 @@ export default function HomeScreen({ navigation }: any) {
         >
           <LinearGradient colors={["rgba(10, 10, 10, 0.6)", "rgba(10, 10, 10, 0.85)"]} style={styles.heroGradient}>
             <View style={styles.heroContent}>
-              <HamburgerMenu navigation={navigation} currentScreen="Home" />
               <View style={styles.heroTextContainer}>
                 <Text style={styles.heroLabel}>BIENVENIDO A</Text>
                 <Text style={styles.heroTitle}>STAR BRICK</Text>

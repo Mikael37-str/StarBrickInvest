@@ -7,7 +7,15 @@ const db = require('./db');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+
+// ✅ CONFIGURACIÓN CORS ACTUALIZADA
+app.use(cors({
+  origin: '*', // Permite todas las origines
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // ==================== AUTENTICACIÓN ====================
@@ -462,7 +470,6 @@ app.post('/api/collection/add', async (req, res) => {
     
     const { userId, itemType, itemId, quantity, paidPrice, condition, notes } = req.body;
     
-    // ✅ Validación de campos requeridos
     if (!userId || !itemType || !itemId || !quantity || paidPrice === undefined) {
       console.error('❌ Faltan campos requeridos');
       return res.status(400).json({ 
@@ -471,7 +478,6 @@ app.post('/api/collection/add', async (req, res) => {
       });
     }
 
-    // ✅ Validaciones numéricas
     const parsedQuantity = parseInt(quantity);
     const parsedPrice = parseFloat(paidPrice);
 
@@ -489,7 +495,6 @@ app.post('/api/collection/add', async (req, res) => {
       });
     }
 
-    // ✅ Validar tipo de artículo
     if (!['set', 'minifigure'].includes(itemType)) {
       return res.status(400).json({ 
         success: false, 
@@ -497,20 +502,15 @@ app.post('/api/collection/add', async (req, res) => {
       });
     }
 
-    // ✅ Validar condición
     const validCondition = ['new', 'used'].includes(condition) ? condition : 'new';
-
-    // ✅ Validar notas
     const cleanNotes = notes ? notes.trim().substring(0, 500) : null;
 
-    // Validar que el usuario existe
     const [userExists] = await db.execute('SELECT id FROM users WHERE id = ?', [userId]);
     if (!userExists.length) {
       console.error('❌ Usuario no encontrado:', userId);
       return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     }
 
-    // Obtener información del artículo
     let itemInfo;
     if (itemType === 'set') {
       const [sets] = await db.execute('SELECT * FROM sets WHERE id = ?', [itemId]);
@@ -530,14 +530,12 @@ app.post('/api/collection/add', async (req, res) => {
       console.log('✅ Minifigura encontrada:', itemInfo.name);
     }
 
-    // Verificar si ya existe en la colección
     const [existing] = await db.execute(
       'SELECT * FROM user_collection WHERE user_id = ? AND item_type = ? AND item_id = ?',
       [userId, itemType, itemId]
     );
 
     if (existing.length > 0) {
-      // Si ya existe, actualizar cantidad
       const newQuantity = existing[0].quantity + parsedQuantity;
       await db.execute(
         'UPDATE user_collection SET quantity = ?, updated_at = NOW() WHERE id = ?',
@@ -552,23 +550,10 @@ app.post('/api/collection/add', async (req, res) => {
       });
     }
 
-    // ✅ Preparar imagen (puede ser null)
     const imageUrl = itemInfo.image || null;
 
     console.log('💾 Insertando en base de datos...');
-    console.log('Datos a insertar:', {
-      userId,
-      itemType,
-      itemId,
-      name: itemInfo.name,
-      quantity: parsedQuantity,
-      paidPrice: parsedPrice,
-      condition: validCondition,
-      notes: cleanNotes,
-      image: imageUrl
-    });
 
-    // Insertar nuevo artículo en la colección
     const [result] = await db.execute(
       `INSERT INTO user_collection 
        (user_id, item_type, item_id, name, quantity, paid_price_usd, condition_status, notes, image, added_at) 
@@ -608,7 +593,6 @@ app.get('/api/collection/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    // Obtener todos los artículos de la colección
     const [items] = await db.execute(
       `SELECT * FROM user_collection 
        WHERE user_id = ? 
@@ -616,7 +600,6 @@ app.get('/api/collection/:userId', async (req, res) => {
       [userId]
     );
 
-    // Calcular estadísticas
     let totalValue = 0;
     let totalInvested = 0;
     let totalSets = 0;
@@ -635,7 +618,6 @@ app.get('/api/collection/:userId', async (req, res) => {
       }
     });
 
-    // Obtener valor actual de mercado
     for (let item of items) {
       let currentPrice = 0;
       if (item.item_type === 'set') {
@@ -713,7 +695,6 @@ app.put('/api/collection/:collectionId', async (req, res) => {
     const collectionId = req.params.collectionId;
     const { quantity, paidPrice, condition, notes } = req.body;
 
-    // ✅ Validaciones
     const parsedQuantity = parseInt(quantity);
     const parsedPrice = parseFloat(paidPrice);
 
@@ -774,4 +755,6 @@ app.put('/api/collection/:collectionId', async (req, res) => {
 
 // ==================== SERVIDOR ====================
 
-app.listen(process.env.PORT, () => console.log(`🚀 Servidor en puerto ${process.env.PORT}`));
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`🚀 Servidor en puerto ${process.env.PORT || 3000}`);
+});

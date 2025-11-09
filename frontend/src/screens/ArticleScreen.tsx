@@ -52,7 +52,7 @@ export default function ArticlesScreen({ navigation }: any) {
 
   const fetchArticles = async () => {
     try {
-      const response = await axios.get("http://192.168.1.47:3000/api/articles")
+      const response = await axios.get("https://perfect-encouragement-production.up.railway.app/api/articles")
       setArticles(response.data.articles || [])
     } catch (error) {
       console.error("Error fetching articles:", error)
@@ -109,7 +109,7 @@ export default function ArticlesScreen({ navigation }: any) {
     if (!articleToDelete) return
 
     try {
-      const response = await axios.delete(`http://192.168.1.47:3000/api/articles/${articleToDelete.id}`)
+      const response = await axios.delete(`https://perfect-encouragement-production.up.railway.app/api/articles/${articleToDelete.id}`)
       
       if (response.data.success) {
         setArticles(articles.filter(a => a.id !== articleToDelete.id))

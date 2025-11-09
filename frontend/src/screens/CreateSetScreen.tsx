@@ -147,7 +147,7 @@ export default function CreateSetScreen({ navigation }: any) {
     setError("")
 
     try {
-      const checkResponse = await axios.get("http://192.168.1.47:3000/api/sets")
+      const checkResponse = await axios.get("https://perfect-encouragement-production.up.railway.app/api/sets")
       const existingSets = checkResponse.data.sets || []
       
       const isDuplicate = existingSets.some(
@@ -160,7 +160,7 @@ export default function CreateSetScreen({ navigation }: any) {
         return
       }
 
-      const response = await axios.post("http://192.168.1.47:3000/api/sets", {
+      const response = await axios.post("https://perfect-encouragement-production.up.railway.app/api/sets", {
         set_id: setId.trim(),
         name: name.trim(),
         year: year ? parseInt(year) : null,

@@ -49,7 +49,7 @@ export default function MinifiguresScreen({ navigation }: any) {
   const fetchMinifigures = async () => {
     try {
       setLoading(true)
-      const response = await axios.get("http://192.168.1.47:3000/api/minifigures")
+      const response = await axios.get("https://perfect-encouragement-production.up.railway.app/api/minifigures")
       setMinifigures(response.data.minifigures || [])
     } catch (error) {
       console.error("Error fetching minifigures:", error)
@@ -92,7 +92,7 @@ export default function MinifiguresScreen({ navigation }: any) {
     if (!minifigToDelete) return
     
     try {
-      const response = await axios.delete(`http://192.168.1.47:3000/api/minifigures/${minifigToDelete.id}`)
+      const response = await axios.delete(`https://perfect-encouragement-production.up.railway.app/api/minifigures/${minifigToDelete.id}`)
       if (response.data.success) {
         setMinifigures(minifigures.filter(m => m.id !== minifigToDelete.id))
         setDeleteModalVisible(false)

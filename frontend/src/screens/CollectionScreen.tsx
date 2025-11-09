@@ -94,7 +94,7 @@ export default function CollectionScreen({ navigation }: any) {
     
     try {
       setLoading(true)
-      const response = await axios.get(`http://192.168.1.47:3000/api/collection/${user.id}`)
+      const response = await axios.get(`https://perfect-encouragement-production.up.railway.app/api/collection/${user.id}`)
       
       if (response.data.success) {
         setItems(response.data.items || [])
@@ -159,7 +159,7 @@ export default function CollectionScreen({ navigation }: any) {
     try {
       setIsUpdating(true)
       const response = await axios.put(
-        `http://192.168.1.47:3000/api/collection/${editModal.item.id}`,
+        `https://perfect-encouragement-production.up.railway.app/api/collection/${editModal.item.id}`,
         {
           quantity,
           paidPrice,
@@ -193,7 +193,7 @@ export default function CollectionScreen({ navigation }: any) {
           onPress: async () => {
             try {
               const response = await axios.delete(
-                `http://192.168.1.47:3000/api/collection/${item.id}`
+                `https://perfect-encouragement-production.up.railway.app/api/collection/${item.id}`
               )
               
               if (response.data.success) {

@@ -60,7 +60,7 @@ export default function EditArticleScreen({ navigation, route }: any) {
     setError("")
 
     try {
-      const response = await axios.put(`http://192.168.1.47:3000/api/articles/${article.id}`, {
+      const response = await axios.put(`https://perfect-encouragement-production.up.railway.app/api/articles/${article.id}`, {
         title: title.trim(),
         content: content.trim(),
         category: category,

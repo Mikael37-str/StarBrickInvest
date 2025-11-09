@@ -51,7 +51,7 @@ export default function CreateArticleScreen({ navigation }: any) {
     setError("")
 
     try {
-      const response = await axios.post("http://192.168.1.47:3000/api/articles", {
+      const response = await axios.post("https://perfect-encouragement-production.up.railway.app/api/articles", {
         title: title.trim(),
         content: content.trim(),
         category: category,

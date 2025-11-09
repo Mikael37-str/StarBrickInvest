@@ -52,7 +52,7 @@ export default function SetsScreen({ navigation }: any) {
   const fetchSets = async () => {
     try {
       setLoading(true)
-      const response = await axios.get("http://192.168.1.47:3000/api/sets")
+      const response = await axios.get("https://perfect-encouragement-production.up.railway.app/api/sets")
       setSets(response.data.sets || [])
     } catch (error) {
       console.error("Error fetching sets:", error)
@@ -95,7 +95,7 @@ export default function SetsScreen({ navigation }: any) {
     if (!setToDelete) return
 
     try {
-      const response = await axios.delete(`http://192.168.1.47:3000/api/sets/${setToDelete.id}`)
+      const response = await axios.delete(`https://perfect-encouragement-production.up.railway.app/api/sets/${setToDelete.id}`)
       
       if (response.data.success) {
         setSets(sets.filter(s => s.id !== setToDelete.id))

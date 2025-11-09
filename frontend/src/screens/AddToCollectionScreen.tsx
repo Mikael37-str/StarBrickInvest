@@ -101,8 +101,8 @@ export default function AddToCollectionScreen({ navigation }: any) {
     try {
       setLoading(true)
       const [setsRes, minifsRes] = await Promise.all([
-        axios.get("http://192.168.1.47:3000/api/sets"),
-        axios.get("http://192.168.1.47:3000/api/minifigures")
+        axios.get("https://perfect-encouragement-production.up.railway.app/api/sets"),
+        axios.get("https://perfect-encouragement-production.up.railway.app/api/minifigures")
       ])
 
       const sets = (setsRes.data.sets || []).map((s: any) => ({
@@ -224,7 +224,7 @@ export default function AddToCollectionScreen({ navigation }: any) {
 
     try {
       setIsAdding(true)
-      const response = await axios.post("http://192.168.1.47:3000/api/collection/add", {
+      const response = await axios.post("https://perfect-encouragement-production.up.railway.app/api/collection/add", {
         userId: user.id,
         itemType: addModal.item.type,
         itemId: addModal.item.id,

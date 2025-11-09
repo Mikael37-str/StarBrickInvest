@@ -137,7 +137,7 @@ export default function CreateMinifigureScreen({ navigation }: any) {
     setError("")
 
     try {
-      const checkResponse = await axios.get("http://192.168.1.47:3000/api/minifigures")
+      const checkResponse = await axios.get("https://perfect-encouragement-production.up.railway.app/api/minifigures")
       const existingMinifigs = checkResponse.data.minifigures || []
       
       const isDuplicate = existingMinifigs.some(
@@ -150,7 +150,7 @@ export default function CreateMinifigureScreen({ navigation }: any) {
         return
       }
 
-      const response = await axios.post("http://192.168.1.47:3000/api/minifigures", {
+      const response = await axios.post("https://perfect-encouragement-production.up.railway.app/api/minifigures", {
         minifig_id: minifigId.trim(),
         name: name.trim(),
         year: year ? parseInt(year) : null,
