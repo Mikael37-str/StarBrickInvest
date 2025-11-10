@@ -11,6 +11,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { colors } from "../theme/colors"
@@ -23,9 +24,9 @@ export default function LoginScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const { loginUser, user } = useContext(AuthContext)
+  const { loginUser, loginWithGoogle, user } = useContext(AuthContext)
 
-  // Redirigir automÃ¡ticamente si ya estÃ¡ logueado
+  // Redirigir automáticamente si ya está logueado
   useEffect(() => {
     if (user) {
       navigation.replace("Home")
@@ -45,10 +46,24 @@ export default function LoginScreen({ navigation }: any) {
     setLoading(false)
 
     if (loginSuccess) {
-      // AuthContext ya actualizÃ³ el user, useEffect manejarÃ¡ la redirecciÃ³n
       setError("")
     } else {
       setError("Email o contraseña incorrectos")
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true)
+    setError("")
+    
+    try {
+      await loginWithGoogle()
+      // El AuthContext se encargará de actualizar el user
+      // El useEffect detectará el cambio y redirigirá automáticamente
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      Alert.alert('Error', 'No se pudo iniciar sesión con Google')
     }
   }
 
@@ -117,7 +132,7 @@ export default function LoginScreen({ navigation }: any) {
             ) : (
               <>
                 <Ionicons name="log-in" size={20} color="#000" />
-                <Text style={styles.loginButtonText}>Iniciar Sesion</Text>
+                <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
               </>
             )}
           </TouchableOpacity>
@@ -130,16 +145,26 @@ export default function LoginScreen({ navigation }: any) {
           </View>
 
           {/* Google Sign In */}
-          <TouchableOpacity style={styles.googleButton}>
-            <Ionicons name="logo-google" size={24} color="#fff" />
-            <Text style={styles.googleButtonText}>Continuar con Google</Text>
+          <TouchableOpacity 
+            style={[styles.googleButton, loading && styles.googleButtonDisabled]}
+            onPress={handleGoogleSignIn}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Ionicons name="logo-google" size={24} color="#fff" />
+                <Text style={styles.googleButtonText}>Continuar con Google</Text>
+              </>
+            )}
           </TouchableOpacity>
 
           {/* Register Link */}
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>¿No tienes cuenta? </Text>
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-              <Text style={styles.registerLink}>Registrate</Text>
+              <Text style={styles.registerLink}>Regístrate</Text>
             </TouchableOpacity>
           </View>
 
@@ -265,16 +290,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.surface,
+    gap: 12,
+    backgroundColor: "#4285F4",
     paddingVertical: 16,
     borderRadius: 12,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: colors.accent + "30",
     marginBottom: 24,
   },
+  googleButtonDisabled: {
+    opacity: 0.6,
+  },
   googleButtonText: {
-    color: colors.text,
+    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },

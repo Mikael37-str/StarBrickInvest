@@ -17,6 +17,24 @@ export const getProfile = async (userId: number) => {
   return res.data;
 };
 
+export const googleSignIn = async (idToken: string, email: string, name: string, photo?: string) => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/google`, {
+      idToken,
+      email,
+      name,
+      photo
+    });
+    return res.data;
+  } catch (error: any) {
+    console.error('Error in Google Sign-In:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Error al autenticar con Google'
+    };
+  }
+};
+
 export const updateProfile = async (userId: number, name: string, bio: string) => {
   try {
     const response = await axios.put(
