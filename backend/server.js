@@ -50,6 +50,83 @@ app.post('/api/register', async (req, res) => {
 });
 
 // Login
+
+
+// ==================== GOOGLE SIGN-IN ====================
+
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { idToken, email, name, photo } = req.body;
+    
+    if (!email || !name) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email y nombre son obligatorios' 
+      });
+    }
+
+    // Verificar si el usuario ya existe
+    const [existingUser] = await db.execute(
+      'SELECT * FROM users WHERE email = ?', 
+      [email]
+    );
+
+    let user;
+
+    if (existingUser.length > 0) {
+      // Usuario existe, hacer login
+      user = existingUser[0];
+      
+      // Actualizar foto si es nueva
+      if (photo && photo !== user.profilePhoto) {
+        await db.execute(
+          'UPDATE users SET profilePhoto = ? WHERE id = ?',
+          [photo, user.id]
+        );
+        user.profilePhoto = photo;
+      }
+    } else {
+      // Usuario nuevo, registrar
+      const [result] = await db.execute(
+        'INSERT INTO users (name, email, password, role, profilePhoto) VALUES (?, ?, ?, ?, ?)',
+        [name, email, 'google-oauth', 'user', photo || null]
+      );
+
+      const [newUser] = await db.execute(
+        'SELECT * FROM users WHERE id = ?',
+        [result.insertId]
+      );
+      
+      user = newUser[0];
+    }
+
+    // Generar JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+
+    // Remover password
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.json({ 
+      success: true, 
+      token, 
+      user: userWithoutPassword,
+      message: existingUser.length > 0 ? 'Login exitoso' : 'Usuario registrado exitosamente'
+    });
+
+  } catch (error) {
+    console.error('Error en Google Sign-In:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error al autenticar con Google' 
+    });
+  }
+});
+
+
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;

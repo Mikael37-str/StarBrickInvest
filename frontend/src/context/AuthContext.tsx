@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login, getProfile } from "../api/api";
 
+
 type User = {
   id: number;
   name: string;

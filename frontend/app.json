@@ -5,12 +5,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.starbrickinvest.app"
+      "bundleIdentifier": "com.starbrickinvest.app",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +21,8 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {},
     "plugins": [
@@ -32,12 +32,17 @@
           "photosPermission": "La app necesita acceso a tus fotos para seleccionar imágenes.",
           "cameraPermission": "La app necesita acceso a tu cámara para tomar fotos."
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin"
       ]
     ],
     "extra": {
       "eas": {
         "projectId": "ec75bcb8-2868-498d-b481-5999760b0ffb"
-      }
+      },
+      "googleWebClientId": "TU_WEB_CLIENT_ID.apps.googleusercontent.com",
+      "googleAndroidClientId": "TU_ANDROID_CLIENT_ID.apps.googleusercontent.com"
     }
   }
 }
