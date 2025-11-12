@@ -44,9 +44,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   // 🔐 Configurar Google Sign-In con expo-auth-session
+  // En Managed Workflow, SOLO usa webClientId
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: Constants.expoConfig?.extra?.googleAndroidClientId,
     webClientId: Constants.expoConfig?.extra?.googleWebClientId,
+    // NO uses androidClientId en Managed Workflow
   });
 
   // 🔄 Manejar la respuesta de Google OAuth
