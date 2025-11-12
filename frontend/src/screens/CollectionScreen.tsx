@@ -78,6 +78,8 @@ export default function CollectionScreen({ navigation }: any) {
     notes: ""
   })
   const [isUpdating, setIsUpdating] = useState(false)
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState<{ id: number; name: string } | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -181,33 +183,32 @@ export default function CollectionScreen({ navigation }: any) {
     }
   }
 
-  const handleDeleteItem = (item: CollectionItem) => {
-    Alert.alert(
-      "Eliminar de Colección",
-      `¿Estás seguro de eliminar "${item.name}" de tu colección?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const response = await axios.delete(
-                `https://perfect-encouragement-production.up.railway.app/api/collection/${item.id}`
-              )
-              
-              if (response.data.success) {
-                Alert.alert("Éxito", "Artículo eliminado de la colección")
-                fetchCollection()
-              }
-            } catch (error) {
-              console.error("Error deleting item:", error)
-              Alert.alert("Error", "No se pudo eliminar el artículo")
-            }
-          }
-        }
-      ]
-    )
+  const openDeleteModal = (itemId: number, itemName: string) => {
+    setItemToDelete({ id: itemId, name: itemName })
+    setDeleteModalVisible(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return
+    
+    try {
+      const response = await axios.delete(
+        `https://perfect-encouragement-production.up.railway.app/api/collection/${itemToDelete.id}`
+      )
+      
+      if (response.data.success) {
+        setDeleteModalVisible(false)
+        setItemToDelete(null)
+        Alert.alert("Éxito", "Artículo eliminado de la colección")
+        // Recargar toda la colección para actualizar stats correctamente
+        await fetchCollection()
+      } else {
+        Alert.alert("Error", response.data.message || "No se pudo eliminar el artículo")
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error)
+      Alert.alert("Error", "No se pudo eliminar el artículo")
+    }
   }
 
   const profitLoss = parseFloat(stats.profitLoss)
@@ -366,7 +367,7 @@ export default function CollectionScreen({ navigation }: any) {
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={styles.deleteButton}
-                          onPress={() => handleDeleteItem(item)}
+                          onPress={() => openDeleteModal(item.id, item.name)}
                         >
                           <Ionicons name="trash" size={18} color={colors.error} />
                         </TouchableOpacity>
@@ -603,6 +604,45 @@ export default function CollectionScreen({ navigation }: any) {
             </View>
           </View>
         </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={deleteModalVisible}
+          onRequestClose={() => setDeleteModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.deleteModalContent}>
+              <View style={styles.deleteModalHeader}>
+                <Ionicons name="warning" size={48} color={colors.error} />
+                <Text style={styles.deleteModalTitle}>Eliminar de Colección</Text>
+              </View>
+              
+              <Text style={styles.deleteModalText}>
+                ¿Estás seguro de que deseas eliminar "{itemToDelete?.name}" de tu colección?
+              </Text>
+              <Text style={styles.deleteModalSubtext}>Esta acción no se puede deshacer.</Text>
+
+              <View style={styles.deleteModalButtons}>
+                <TouchableOpacity 
+                  style={styles.deleteModalCancelButton}
+                  onPress={() => setDeleteModalVisible(false)}
+                >
+                  <Text style={styles.deleteModalCancelText}>Cancelar</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={styles.deleteModalDeleteButton}
+                  onPress={confirmDelete}
+                >
+                  <Ionicons name="trash" size={20} color="#fff" />
+                  <Text style={styles.deleteModalDeleteText}>Eliminar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   )
@@ -644,8 +684,8 @@ const styles = StyleSheet.create({
   heroContent: {
     alignItems: "center",
     maxWidth: 600,
-    paddingTop: width < 768 ? 50 : 0, // ✅ Agregar espacio arriba para el botón hamburguesa en mobile
-  position: 'relative', // ✅ Agregar esto
+    paddingTop: width < 768 ? 50 : 0,
+    position: 'relative',
   },
   iconContainer: {
     width: 80,
@@ -1178,5 +1218,70 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 16,
     fontWeight: "600",
+  },
+  // Delete Modal Styles
+  deleteModalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: colors.accent + "30",
+  },
+  deleteModalHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  deleteModalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginTop: 12,
+  },
+  deleteModalText: {
+    fontSize: 16,
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: 8,
+    lineHeight: 22,
+  },
+  deleteModalSubtext: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  deleteModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  deleteModalCancelButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: colors.border,
+    alignItems: 'center',
+  },
+  deleteModalCancelText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  deleteModalDeleteButton: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: colors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteModalDeleteText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 })

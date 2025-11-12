@@ -11,6 +11,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { colors } from "../theme/colors"
@@ -27,7 +28,7 @@ export default function RegisterScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const { loginUser, user } = useContext(AuthContext)
+  const { loginUser, loginWithGoogle, user } = useContext(AuthContext)
 
   // Redirigir automáticamente si ya está logueado
   useEffect(() => {
@@ -83,6 +84,21 @@ export default function RegisterScreen({ navigation }: any) {
       setError(err.message || "Error de conexión")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true)
+    setError("")
+    
+    try {
+      await loginWithGoogle()
+      // El AuthContext se encargará de actualizar el user
+      // El useEffect detectará el cambio y redirigirá automáticamente
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      Alert.alert('Error', 'No se pudo iniciar sesión con Google')
     }
   }
 
@@ -194,9 +210,19 @@ export default function RegisterScreen({ navigation }: any) {
           </View>
 
           {/* Google Sign In */}
-          <TouchableOpacity style={styles.googleButton}>
-            <Ionicons name="logo-google" size={24} color="#fff" />
-            <Text style={styles.googleButtonText}>Continuar con Google</Text>
+          <TouchableOpacity 
+            style={[styles.googleButton, loading && styles.googleButtonDisabled]}
+            onPress={handleGoogleSignIn}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Ionicons name="logo-google" size={24} color="#fff" />
+                <Text style={styles.googleButtonText}>Continuar con Google</Text>
+              </>
+            )}
           </TouchableOpacity>
 
           {/* Login Link */}
@@ -259,6 +285,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     gap: 8,
+    borderWidth: 1,
+    borderColor: colors.error + "40",
   },
   errorText: {
     color: colors.error,
@@ -325,16 +353,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.surface,
+    gap: 12,
+    backgroundColor: "#4285F4",
     paddingVertical: 16,
     borderRadius: 12,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: colors.accent + "30",
     marginBottom: 24,
   },
+  googleButtonDisabled: {
+    opacity: 0.6,
+  },
   googleButtonText: {
-    color: colors.text,
+    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },

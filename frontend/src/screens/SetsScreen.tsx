@@ -300,21 +300,17 @@ export default function SetsScreen({ navigation }: any) {
                 {displayedSets.map((set) => (
                   <View key={set.id} style={styles.setCard}>
                     {user?.role === "admin" && (
-                      <View style={styles.adminButtons}>
-                        <TouchableOpacity 
-                          style={styles.editButton}
-                          onPress={() => handleEditSet(set)}
-                        >
-                          <Ionicons name="create" size={18} color={colors.accent} />
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                          style={styles.deleteButton}
-                          onPress={() => openDeleteModal(set.id, set.name)}
-                        >
-                          <Ionicons name="trash" size={18} color={colors.error} />
-                        </TouchableOpacity>
-                      </View>
-                    )}
+              <View style={styles.adminButtons}>
+                <TouchableOpacity 
+                   style={styles.deleteButton}
+                   onPress={() => openDeleteModal(set.id, set.name)}
+                >
+             <Ionicons name="trash" size={18} color={colors.error} />
+                </TouchableOpacity>
+              </View>
+              )}
+
+
 
                     {set.image ? (
                       <Image
@@ -620,14 +616,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     position: "relative",
   },
-  adminButtons: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    flexDirection: "row",
-    gap: 8,
-    zIndex: 10,
-  },
+ adminButtons: {
+  position: "absolute",
+  top: 12,
+  right: 12,
+  zIndex: 10,
+},
   editButton: {
     backgroundColor: colors.surface + "DD",
     width: 36,

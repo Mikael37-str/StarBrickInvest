@@ -302,22 +302,16 @@ export default function MinifiguresScreen({ navigation }: any) {
                     key={minifig.id}
                     style={styles.minifigCard}
                   >
-                    {user?.role === "admin" && (
-                      <View style={styles.adminButtons}>
-                        <TouchableOpacity 
-                          style={styles.editButton}
-                          onPress={() => handleEditMinifigure(minifig)}
-                        >
-                          <Ionicons name="create" size={18} color={colors.accent} />
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                          style={styles.deleteButton}
-                          onPress={() => openDeleteModal(minifig.id, minifig.name)}
-                        >
-                          <Ionicons name="trash" size={18} color={colors.error} />
-                        </TouchableOpacity>
-                      </View>
-                    )}
+                      {user?.role === "admin" && (
+                                  <View style={styles.adminButtons}>
+                                    <TouchableOpacity 
+                                       style={styles.deleteButton}
+                                       onPress={() => openDeleteModal(minifig.id, minifig.name)}
+                                    >
+                                 <Ionicons name="trash" size={18} color={colors.error} />
+                                    </TouchableOpacity>
+                                  </View>
+                                  )}
 
                     {minifig.image ? (
                       <Image
@@ -379,7 +373,7 @@ export default function MinifiguresScreen({ navigation }: any) {
                 >
                   <Ionicons name="arrow-down-circle" size={24} color={colors.accent} />
                   <Text style={styles.loadMoreText}>
-                    Cargar MÃ¡s ({filteredMinifigures.length - displayedMinifigures.length} restantes)
+                    Cargar Más ({filteredMinifigures.length - displayedMinifigures.length} restantes)
                   </Text>
                 </TouchableOpacity>
               )}
@@ -410,9 +404,9 @@ export default function MinifiguresScreen({ navigation }: any) {
               </View>
               
               <Text style={styles.modalText}>
-                Â¿EstÃ¡s seguro de que deseas eliminar "{minifigToDelete?.name}"?
+                ¿Estás seguro de que deseas eliminar "{minifigToDelete?.name}"?
               </Text>
-              <Text style={styles.modalSubtext}>Esta acciÃ³n no se puede deshacer.</Text>
+              <Text style={styles.modalSubtext}>Esta acción no se puede deshacer.</Text>
 
               <View style={styles.modalButtons}>
                 <TouchableOpacity 
@@ -618,13 +612,11 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   adminButtons: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    flexDirection: "row",
-    gap: 8,
-    zIndex: 10,
-  },
+  position: "absolute",
+  top: 12,
+  right: 12,
+  zIndex: 10,
+},
   editButton: {
     backgroundColor: colors.surface + "DD",
     width: 36,

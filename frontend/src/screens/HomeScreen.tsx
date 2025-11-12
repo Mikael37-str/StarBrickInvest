@@ -75,8 +75,7 @@ export default function HomeScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      
-<HamburgerMenu navigation={navigation} currentScreen="NombreDeLaPantalla" />
+      <HamburgerMenu navigation={navigation} currentScreen="NombreDeLaPantalla" />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
@@ -122,17 +121,17 @@ export default function HomeScreen({ navigation }: any) {
         {/* Stats Bar */}
         <View style={styles.statsBar}>
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>500+</Text>
+            <Text style={styles.statNumber}>950+</Text>
             <Text style={styles.statLabel}>Sets</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>1.2K</Text>
+            <Text style={styles.statNumber}>1.300</Text>
             <Text style={styles.statLabel}>Minifiguras</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>Más de 2</Text>
+            <Text style={styles.statNumber}>Más de 200</Text>
             <Text style={styles.statLabel}>Usuarios</Text>
           </View>
         </View>
@@ -176,11 +175,10 @@ export default function HomeScreen({ navigation }: any) {
             {width > 768 && (
               <View style={styles.admiralContainer}>
                 <Image
-                  source={{ uri: "" }}
+                  source={{ uri: "https://cdn1.epicgames.com/offer/9c59efaabb6a48f19b3485d5d9416032/EGS_LEGOStarWarsObiWanKenobiPack_TTGames_DLC_G1A_00_1920x1080-55a316fa3c1b55f18baebe318b3ae06e" }}
                   style={styles.admiralImage}
-                  resizeMode="contain"
+                  resizeMode="cover"
                 />
-                <View style={styles.admiralGlow} />
               </View>
             )}
           </View>
@@ -193,7 +191,10 @@ export default function HomeScreen({ navigation }: any) {
               <Text style={styles.articlesTitle}>Últimas Novedades</Text>
               <Text style={styles.articlesSubtitle}>Mantente informado del mercado</Text>
             </View>
-            <TouchableOpacity style={styles.viewAllBtn}>
+            <TouchableOpacity 
+              style={styles.viewAllBtn}
+              onPress={() => navigation.navigate("Articles")}
+            >
               <Text style={styles.viewAllText}>Ver todo</Text>
               <Ionicons name="arrow-forward" size={16} color={colors.accent} />
             </TouchableOpacity>
@@ -203,15 +204,16 @@ export default function HomeScreen({ navigation }: any) {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.articlesScroll} nestedScrollEnabled={true}>
               {articles.slice(0, 5).map((article, index) => (
                 <TouchableOpacity 
-                     key={article.id} 
-                     style={[styles.articleCardModern, index === 0 && styles.firstCard]}
-                     onPress={() => navigation.navigate("ArticleDetail", { article })} >
+                  key={article.id} 
+                  style={[styles.articleCardModern, index === 0 && styles.firstCard]}
+                  onPress={() => navigation.navigate("ArticleDetail", { article })}
+                >
                   <View style={styles.articleImageContainer}>
                     {article.image ? (
-                 <Image
-                   source={{ uri: article.image }}  // ✅ Ya NO agregar URL base
-                    style={styles.articleImageModern}
-                    />
+                      <Image
+                        source={{ uri: article.image }}
+                        style={styles.articleImageModern}
+                      />
                     ) : (
                       <View style={styles.articleImagePlaceholder}>
                         <Ionicons name="newspaper" size={40} color={colors.textSecondary} />
@@ -269,23 +271,32 @@ export default function HomeScreen({ navigation }: any) {
           <View style={styles.quickActions}>
             <Text style={styles.quickActionsTitle}>Acciones Rápidas</Text>
             <View style={styles.quickActionsGrid}>
-              <TouchableOpacity style={styles.quickActionCard}>
+              <TouchableOpacity 
+                style={styles.quickActionCard}
+                onPress={() => navigation.navigate("AddToCollection")}
+              >
                 <View style={[styles.quickActionIcon, { backgroundColor: "#4A90E2" + "20" }]}>
                   <Ionicons name="add-circle" size={28} color="#4A90E2" />
                 </View>
                 <Text style={styles.quickActionText}>Agregar a Colección</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.quickActionCard}>
+              <TouchableOpacity 
+                style={styles.quickActionCard}
+                onPress={() => navigation.navigate("Sets")}
+              >
                 <View style={[styles.quickActionIcon, { backgroundColor: "#50C878" + "20" }]}>
-                  <Ionicons name="search" size={28} color="#50C878" />
+                  <Ionicons name="cube" size={28} color="#50C878" />
                 </View>
                 <Text style={styles.quickActionText}>Buscar Sets</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.quickActionCard}>
+              <TouchableOpacity 
+                style={styles.quickActionCard}
+                onPress={() => navigation.navigate("Minifigures")}
+              >
                 <View style={[styles.quickActionIcon, { backgroundColor: "#F5A623" + "20" }]}>
-                  <Ionicons name="stats-chart" size={28} color="#F5A623" />
+                  <Ionicons name="people" size={28} color="#F5A623" />
                 </View>
-                <Text style={styles.quickActionText}>Ver Estadísticas</Text>
+                <Text style={styles.quickActionText}>Buscar Minifiguras</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -297,15 +308,15 @@ export default function HomeScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   safeArea: {
-  flex: 1,
-  backgroundColor: colors.background,
-},
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
   },
   scrollContent: {
-     flexGrow: 1, // ✅ Solo esto
-  paddingBottom: 30, // Solo padding bottom si es necesario
+    flexGrow: 1,
+    paddingBottom: 30,
   },
   heroBackground: {
     width: "100%",
@@ -452,11 +463,11 @@ const styles = StyleSheet.create({
   },
   featuresLayout: {
     flexDirection: width > 768 ? "row" : "column",
-    gap: 16,
+    gap: 20,
     alignItems: "stretch",
   },
   featuresGrid: {
-    flex: width > 768 ? 1 : undefined,
+    flex: width > 768 ? 0.6 : undefined,
     gap: 10,
     justifyContent: "space-between",
   },
@@ -498,25 +509,20 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   admiralContainer: {
-    width: 220,
-    aspectRatio: 0.65,
+    flex: 0.4,
+    aspectRatio: 1,
     position: "relative",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
+    borderRadius: 20,
+    overflow: "hidden",
+    borderWidth: 2,
+    borderColor: colors.accent + "30",
+    backgroundColor: colors.surface,
   },
   admiralImage: {
-    width: "150%",
-    height: "150%",
-    zIndex: 2,
-  },
-  admiralGlow: {
-    position: "absolute",
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: colors.accent,
-    opacity: 0.15,
-    zIndex: 1,
+    width: "100%",
+    height: "100%",
   },
   articlesSection: {
     marginTop: 50,

@@ -81,8 +81,8 @@ export default function CreateMinifigureScreen({ navigation }: any) {
       const yearNum = parseInt(year)
       const currentYear = new Date().getFullYear()
       
-      if (yearNum < 1975) {
-        return "El año no puede ser anterior a 1975"
+      if (yearNum < 1999) {
+        return "El año no puede ser anterior a 1999"
       }
       
       if (yearNum > currentYear + 2) {
@@ -289,7 +289,7 @@ export default function CreateMinifigureScreen({ navigation }: any) {
                   maxLength={4}
                 />
               </View>
-              <Text style={styles.helpText}>Año entre 1975 y {new Date().getFullYear() + 2}</Text>
+              <Text style={styles.helpText}>Año entre 1999 y {new Date().getFullYear() + 2}</Text>
             </View>
 
             {/* Appearances */}
