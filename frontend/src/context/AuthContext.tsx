@@ -4,7 +4,6 @@ import { login, getProfile, googleSignIn } from "../api/api";
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
-import { Alert } from 'react-native';
 
 // Necesario para cerrar el navegador correctamente después de la autenticación
 WebBrowser.maybeCompleteAuthSession();
@@ -47,11 +46,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 🔐 Configurar Google Sign-In con expo-auth-session
   // En Managed Workflow, SOLO usa webClientId
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: Constants.expoConfig?.extra?.googleWebClientId || '',
+    webClientId: Constants.expoConfig?.extra?.googleWebClientId,
+    // NO uses androidClientId en Managed Workflow
   });
-
-  // Verificar si Google está configurado
-  const isGoogleConfigured = !!Constants.expoConfig?.extra?.googleWebClientId;
 
   // 🔄 Manejar la respuesta de Google OAuth
   useEffect(() => {
@@ -62,7 +59,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } else if (response?.type === 'error') {
       console.error("❌ Error en Google OAuth:", response.error);
-      Alert.alert('Error', 'No se pudo conectar con Google. Intenta nuevamente.');
     } else if (response?.type === 'cancel') {
       console.log("ℹ️ Usuario canceló el inicio de sesión con Google");
     }
@@ -80,10 +76,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       
-      if (!userInfoResponse.ok) {
-        throw new Error('No se pudo obtener información del usuario de Google');
-      }
-
       const googleUser = await userInfoResponse.json();
       console.log("✅ Información de Google obtenida:", googleUser.email);
 
@@ -100,14 +92,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await AsyncStorage.setItem("userId", String(res.user.id));
         await AsyncStorage.setItem("userToken", res.token);
         setUser(res.user);
-        Alert.alert('¡Bienvenido!', `Hola ${res.user.name}`);
       } else {
         console.error("❌ Error al autenticar en backend:", res.message);
-        Alert.alert('Error', res.message || 'No se pudo autenticar con el servidor');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("❌ Error en handleGoogleSignIn:", error);
-      Alert.alert('Error', 'Ocurrió un error al iniciar sesión con Google');
     }
   };
 
@@ -136,40 +125,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginWithGoogle = async () => {
     try {
       console.log("🔐 Iniciando Google Sign-In...");
-      console.log("📱 Google configurado:", isGoogleConfigured);
-      console.log("🔑 Web Client ID:", Constants.expoConfig?.extra?.googleWebClientId);
-
-      if (!isGoogleConfigured) {
-        console.warn("⚠️ Google Sign-In no está configurado en app.json");
-        Alert.alert(
-          "Error de Configuración", 
-          "Google Sign-In no está configurado correctamente. Contacta al administrador."
-        );
-        return;
-      }
       
       if (!request) {
         console.error("❌ Google request no está disponible");
-        Alert.alert(
-          "Error", 
-          "No se pudo iniciar Google Sign-In. Intenta nuevamente."
-        );
         return;
       }
       
-      console.log("🌐 Abriendo navegador para autenticación...");
-      
       // Abrir el navegador para autenticación OAuth
-      const result = await promptAsync();
-      
-      console.log("📊 Resultado de promptAsync:", result?.type);
-    } catch (error: any) {
+      await promptAsync();
+    } catch (error) {
       console.error("❌ Error al iniciar Google Sign-In:", error);
-      console.error("📋 Error completo:", JSON.stringify(error, null, 2));
-      Alert.alert(
-        'Error', 
-        'No se pudo conectar con Google. Verifica tu conexión a internet.'
-      );
     }
   };
 
@@ -227,14 +192,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadUser();
   }, []);
 
-  // 🔍 Log de configuración al montar el componente
-  useEffect(() => {
-    console.log("🔧 AuthContext montado");
-    console.log("📱 Google configurado:", isGoogleConfigured);
-    console.log("🔑 Web Client ID:", Constants.expoConfig?.extra?.googleWebClientId);
-    console.log("📦 Request disponible:", !!request);
-  }, []);
-
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -244,7 +201,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       logout,
       refreshUser,
       isAuthenticated: !!user,
-      googleRequest: request,
+      googleRequest: request, // Útil para deshabilitar el botón mientras se carga
     }}>
       {children}
     </AuthContext.Provider>
