@@ -51,12 +51,7 @@ export default function HomeScreen({ navigation }: any) {
       description: "Análisis de valor en tiempo real",
       color: "#50C878",
     },
-    {
-      icon: "newspaper-outline",
-      title: "Insights",
-      description: "Tendencias y predicciones",
-      color: "#F5A623",
-    },
+    
     {
       icon: "star-outline",
       title: "Wishlist",

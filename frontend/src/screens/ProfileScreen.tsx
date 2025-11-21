@@ -11,8 +11,6 @@ export default function ProfileScreen({ navigation }: any) {
 
   const menuItems = [
     { icon: "person-outline", title: "Editar Perfil", onPress: () => navigation.navigate("EditProfile") },
-    { icon: "heart-outline", title: "Favoritos", onPress: () => {} },
-    { icon: "settings-outline", title: "Configuracion", onPress: () => {} },
   ]
 
   return (
